@@ -36,6 +36,14 @@ Non-chromium users: please
 2. Enable developer mode (top-right corner)
 3. Drag the `extension` directory into this window
 
+Note: I believe that install via developer mode is the correct solution here.
+While the chrome web store does its best to block malicious updates, but they're
+not perfect. The dev install can't be updated.
+
+This extension requires injecting javascript on every page. You don't need to
+trust me with that. The code is there for anyone to report vulnerabilities, and
+it's under 100 lines, so they'd be easy to spot.
+
 ## Test
 
 You can test this by going to https://async-clipboard-text.glitch.me/.
