@@ -3,7 +3,7 @@
 
   "name": "Clipboard Guard",
   "description": "Prevent background clipboard access",
-  "version": "0.1.0",
+  "version": "1.0.0",
 
   "icons": {
     "128": "assets/icon128.png"
