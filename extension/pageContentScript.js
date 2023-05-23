@@ -1,21 +1,25 @@
 'use strict';
 
-(() => {
+patchWindow(window);
+
+function patchWindow(window) {
   let lastPasteHotkeyTime = -Infinity;
 
-  document.addEventListener('keydown', (e) => {
-    if (e.metaKey && e.key === 'v') {
-      lastPasteHotkeyTime = Date.now();
+  const currentTime = Date.now.bind(Date);
+
+  window.document.addEventListener('keydown', (e) => {
+    if (e.isTrusted && e.metaKey && e.key === 'v') {
+      lastPasteHotkeyTime = currentTime();
     }
   });
 
   function isClipboardAllowed() {
-    return Date.now() - lastPasteHotkeyTime < 500;
-  };
+    return currentTime() - lastPasteHotkeyTime < 500;
+  }
 
-  const originalClipboardRead = Clipboard.prototype.read;
+  const originalClipboardRead = window.Clipboard.prototype.read;
 
-  Clipboard.prototype.read = async function(...args) {
+  window.Clipboard.prototype.read = async function(...args) {
     // Call it for perms regardless
     const result = await originalClipboardRead.call(this, ...args);
 
@@ -28,9 +32,9 @@
     return [];
   };
 
-  const originalClipboardReadText = Clipboard.prototype.readText;
+  const originalClipboardReadText = window.Clipboard.prototype.readText;
 
-  Clipboard.prototype.readText = async function (...args) {
+  window.Clipboard.prototype.readText = async function (...args) {
     // Call it for perms regardless
     const result = await originalClipboardReadText.call(this, ...args);
 
@@ -42,4 +46,18 @@
 
     return '';
   };
-})();
+
+  const originalCreateElement = window.Document.prototype.createElement;
+
+  window.Document.prototype.createElement = function(...args) {
+    const result = originalCreateElement.call(this, ...args);
+
+    if (args[0] === 'iframe') {
+      result.addEventListener('load', () => {
+        patchWindow(result.contentWindow);
+      });
+    }
+
+    return result;
+  }
+}
