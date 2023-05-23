@@ -1,0 +1,38 @@
+{
+  "manifest_version": 2,
+
+  "name": "Clipboard Guard",
+  "description": "Prevent background clipboard access",
+  "version": "0.1.0",
+
+  "icons": {
+    "128": "assets/icon128.png"
+  },
+
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+
+  "web_accessible_resources": [
+    "pageContentScript.js",
+    "assets/*",
+    "*.LICENSE.txt"
+  ],
+
+  "permissions": [],
+
+  "browser_action": {
+    "default_icon": {
+      "128": "assets/icon128.png"
+    },
+    "default_title": "Clipboard Guard"
+  },
+
+  "background": {
+    "scripts": []
+  },
+
+  "content_scripts": [{
+    "matches": ["*"],
+    "js": ["contentScript.js"],
+    "run_at": "document_start"
+  }]
+}
