@@ -13,13 +13,11 @@
     return Date.now() - lastPasteHotkeyTime < 500;
   };
 
-  const clipboard = navigator.clipboard;
+  const originalClipboardRead = Clipboard.prototype.read;
 
-  const originalClipboardRead = clipboard.read.bind(clipboard);
-
-  navigator.clipboard.read = async (...args) => {
+  Clipboard.prototype.read = async function(...args) {
     // Call it for perms regardless
-    const result = await originalClipboardRead(...args);
+    const result = await originalClipboardRead.call(this, ...args);
 
     if (isClipboardAllowed()) {
       return result;
@@ -30,11 +28,11 @@
     return [];
   };
 
-  const originalClipboardReadText = clipboard.readText.bind(clipboard);
+  const originalClipboardReadText = Clipboard.prototype.readText;
 
-  navigator.clipboard.readText = async (...args) => {
+  Clipboard.prototype.readText = async function (...args) {
     // Call it for perms regardless
-    const result = await originalClipboardReadText(...args);
+    const result = await originalClipboardReadText.call(this, ...args);
 
     if (isClipboardAllowed()) {
       return result;
