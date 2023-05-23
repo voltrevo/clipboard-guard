@@ -1,3 +1,33 @@
+# Broken: Clipboard Guard
+
+It turns out that iframes are unreasonably effective at getting authentic
+versions of APIs:
+
+```js
+function getAuthenticReadText() {
+  const div = document.createElement('div');
+  div.style.display = 'none';
+  document.body.appendChild(div);
+
+  div.innerHTML = '<iframe></iframe>';
+  const iframe = div.children[0];
+
+  const clipboard = iframe.contentWindow.navigator.clipboard;
+  const readText = clipboard.readText.bind(clipboard);
+  div.remove();
+
+  return readText;
+}
+```
+
+A big part of how this extension works is that it's the first JS that runs on
+the page (except maybe for other extensions). This _includes_ iframes.
+Unfortunately, it doesn't get to run before the parent frame can access it. Also
+unfortunately, you can bind iframe methods to objects on the parent frame, and
+they still work.
+
+If it's possible to fix this, I'd love to know.
+
 # Clipboard Guard
 
 Browser extension that blocks the `navigator.clipboard.read*` APIs when you
